@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const autoIncrement = require('mongoose-auto-increment');
 
 const DoctorSchema = new mongoose.Schema({
     _id: {
@@ -13,13 +12,6 @@ const DoctorSchema = new mongoose.Schema({
     },
     name: String,
     dateOfBirth: String,
-});
-
-DoctorSchema.plugin(autoIncrement.plugin, {
-    model: 'Doctor',
-    field: '_id',
-    startAt: 201,
-    incrementBy: 1,
 });
 
 module.exports = mongoose.model('Doctor', DoctorSchema);

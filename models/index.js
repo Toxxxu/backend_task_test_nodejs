@@ -1,3 +1,9 @@
-export const Patient = require('./Patient');
-export const Doctor = require('./Doctor');
-export const Appointment = require('./Appointment');
+const Patient = require('./Patient');
+const Doctor = require('./Doctor');
+const Appointment = require('./Appointment');
+
+module.exports = {
+    Patient,
+    Doctor,
+    Appointment,
+}
