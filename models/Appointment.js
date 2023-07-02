@@ -10,6 +10,7 @@ const AppointmentSchema = new mongoose.Schema({
         ref: 'Doctor',
     },
     hour: String,
+    color: String,
 });
 
 module.exports = mongoose.model('Appointment', AppointmentSchema);

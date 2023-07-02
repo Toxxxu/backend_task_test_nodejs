@@ -37,9 +37,9 @@ exports.sendData = async (req, res) => {
                 }
                 if (patient.hours.includes('-')) {
                     const [start, end] = patient.hours.split('-');
-                    const from = parseInt(start).toFixed();
-                    const to = parseInt(end).toFixed();
-                    if (from >= to) {
+                    const from = parseInt(start);
+                    const to = parseInt(end);
+                    if (from > to) {
                         throw new Error('The start is bigger than end');
                     } else if (from === to) {
                         throw new Error(`The hours can't be the same`);
@@ -56,7 +56,7 @@ exports.sendData = async (req, res) => {
                     throw new Error('There is given wrong format date');
                 }
                 await newPatient.save();
-                successPatients.push(patient);
+                successPatients.push(newPatient);
                 successCount.patients++;
             } catch (error) {
                 console.log(error, patient);
@@ -85,9 +85,9 @@ exports.sendData = async (req, res) => {
                 }
                 if (doctor.hours.includes('-')) {
                     const [start, end] = doctor.hours.split('-');
-                    const from = parseInt(start).toFixed();
-                    const to = parseInt(end).toFixed();
-                    if (from >= to) {
+                    const from = parseInt(start);
+                    const to = parseInt(end);
+                    if (from > to) {
                         throw new Error('The start is bigger than end');
                     } else if (from === to) {
                         throw new Error(`The hours can't be same`);
@@ -104,7 +104,7 @@ exports.sendData = async (req, res) => {
                     throw new Error('There is given wrong format date');
                 }
                 await newDoctor.save();
-                successDoctors.push(doctor);
+                successDoctors.push(newDoctor);
                 successCount.doctors++;
             } catch (error) {
                 console.log(error, doctor);
@@ -128,8 +128,9 @@ exports.sendData = async (req, res) => {
                 if (appointment.hour && appointment.hour.length >= 3) {
                     throw new Error('Wrong format appointment hour');
                 }
+                newAppointment.color = await setAppointmentColor(appointment, patients, doctors, appointments);
                 await newAppointment.save();
-                successAppointments.push(appointment);
+                successAppointments.push(newAppointment);
                 successCount.appointments++;
             } catch (error) {
                 wrongFormatAppointments.push(appointment);
@@ -151,3 +152,45 @@ exports.sendData = async (req, res) => {
         duplicateDoctors,
     });
 };
+
+function isAppointmentConflict(existingAppointment, newAppointment) {
+    return (
+        (existingAppointment.patientId === newAppointment.patientId &&
+        existingAppointment.hour === newAppointment.hour) ||
+        (existingAppointment.doctorId === newAppointment.doctorId &&
+        existingAppointment.hour === newAppointment.hour)
+    );
+}
+
+const setAppointmentColor = async (appointment, patients, doctors, appointments) => {
+    const patient = patients.filter((p) => p.id === appointment.patientId)[0];
+    const doctor = doctors.filter((d) => d.id === appointment.doctorId)[0];
+
+    if (!appointment.hour) {
+        return 'red';
+    }
+
+    const [startPatient, endPatient] = patient.hours.split('-');
+    const [fromPatientAvailable, toPatientAvailable] = [parseInt(startPatient), parseInt(endPatient)];
+    const [startDoctor, endDoctor] = doctor.hours.split('-');
+    const [fromDoctorAvailable, toDoctorAvailable] = [parseInt(startDoctor), parseInt(endDoctor)];
+
+    const appointmentHour = parseInt(appointment.hour);
+        
+    const isPatientAvailable = appointmentHour >= fromPatientAvailable && appointmentHour <= toPatientAvailable;
+    const isDoctorAvailable = appointmentHour >= fromDoctorAvailable && appointmentHour < toDoctorAvailable;
+    
+    if (isPatientAvailable && isDoctorAvailable) {
+        const conflictingAppointments = appointments.filter((existing) => 
+            isAppointmentConflict(existing, appointment)
+        );
+
+        if (conflictingAppointments.length >= 2) {
+            return 'yellow';
+        } else {
+            return 'green';
+        }
+    } else {
+        return 'red';
+    }
+}

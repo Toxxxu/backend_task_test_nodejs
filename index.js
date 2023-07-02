@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
-const { getData, sendData, clearData } = require('./controllers/index');
+const { getData, sendData, clearData, generateLeftTable } = require('./controllers/index');
 
 app.get('/getData', (req, res) => getData(req, res));
 app.post('/sendData', (req, res) => sendData(req, res));
