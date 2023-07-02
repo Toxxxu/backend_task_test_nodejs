@@ -125,7 +125,7 @@ exports.sendData = async (req, res) => {
                 if (!appointment.patientId || !appointment.doctorId) {
                     throw new Error('There is no patient or doctor');
                 }
-                if (appointment.hour.length >= 3) {
+                if (appointment.hour && appointment.hour.length >= 3) {
                     throw new Error('Wrong format appointment hour');
                 }
                 await newAppointment.save();
