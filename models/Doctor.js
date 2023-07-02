@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const DoctorSchema = new mongoose.Schema({
-    _id: {
+    id: {
         type: Number,
         unique: true,
         required: true,
     },
-    hourse: {
+    hours: {
         type: String,
         required: true,
     },

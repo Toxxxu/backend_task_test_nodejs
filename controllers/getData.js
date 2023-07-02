@@ -10,7 +10,7 @@ exports.getData = async (req, res) => {
             patients,
             doctors,
             appointments,
-        })
+        });
     } catch (error) {
         console.error('Error getting data', error);
         res.status(500).json({ error: 'An error occurred while retrieving data from database'} );
