@@ -35,7 +35,7 @@ exports.sendData = async (req, res) => {
                 if (!patient.id) {
                     throw new Error('There is no id');
                 }
-                if (patient.hours.includes('-')) {
+                if (patient.hours.includes('-') && patient.hours.split('-').length === 2) {
                     const [start, end] = patient.hours.split('-');
                     const from = parseInt(start);
                     const to = parseInt(end);
@@ -47,7 +47,7 @@ exports.sendData = async (req, res) => {
                         throw new Error('There is wrong format hours');
                     }
                 } else {
-                    throw new Error('There is no hyphen');
+                    throw new Error('There is no hyphen or given wrong format');
                 }
                 if (patient.name && patient.name.split(' ').length >= 3) {
                     throw new Error('Useless third word in name found');
@@ -83,7 +83,7 @@ exports.sendData = async (req, res) => {
                 if (!doctor.id) {
                     throw new Error('There is no id');
                 }
-                if (doctor.hours.includes('-')) {
+                if (doctor.hours.includes('-') && doctor.hours.split('-').length === 2) {
                     const [start, end] = doctor.hours.split('-');
                     const from = parseInt(start);
                     const to = parseInt(end);
@@ -95,7 +95,7 @@ exports.sendData = async (req, res) => {
                         throw new Error('There is wrong format hours');
                     }
                 } else {
-                    throw new Error('There is no hyphen');
+                    throw new Error('There is no hyphen or given wrong format');
                 }
                 if (doctor.name && doctor.name.split(' ').length >= 3) {
                     throw new Error('Useless third word in name found');
@@ -125,7 +125,7 @@ exports.sendData = async (req, res) => {
                 if (!appointment.patientId || !appointment.doctorId) {
                     throw new Error('There is no patient or doctor');
                 }
-                if (appointment.hour && appointment.hour.length >= 3) {
+                if (appointment.hour && appointment.hour.length >= 3 && parseInt(appointment.hour) >= 25) {
                     throw new Error('Wrong format appointment hour');
                 }
                 newAppointment.color = await setAppointmentColor(appointment, patients, doctors, appointments);
