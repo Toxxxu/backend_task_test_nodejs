@@ -87,8 +87,25 @@ exports.generateRightTable = async (req, res) => {
             }
         }
 
+        const colorCounts = {
+            green: 0,
+            blue: 0,
+            red: 0,
+        }
+
+        for (const appointment of rightTable) {
+            if (appointment.color === 'green') {
+                colorCounts.green++;
+            } else if (appointment.color === 'blue') {
+                colorCounts.blue++;
+            } else {
+                colorCounts.red++;
+            }
+        }
+
         res.json({
             rightTable,
+            colorCounts,
         });
     } catch (error) {
         console.error('Error generating right table: ', error);
