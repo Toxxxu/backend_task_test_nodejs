@@ -33,11 +33,12 @@ exports.generateRightTable = async (req, res) => {
                     fakeTable.push(await RedAndYellowColors(appointment, patient, doctor, appointments));
                 } else {
                     fakeTable.push({
+                        _id: appointment._id,
                         patientId: appointment.patientId,
                         doctorId: appointment.doctorId,
                         hour: appointment.hour,
                         color: appointment.color,
-                    })
+                    });
                 }
             }
         }
@@ -119,6 +120,7 @@ const RedAndYellowColors = async (appointment, patient, doctor, appointments) =>
             let key = false;
             if ((nearestHour > toPatientAvailable || nearestHour > toDoctorAvailable)) {
                 return {
+                    _id: appointment._id,
                     patientId: appointment.patientId,
                     doctorId: appointment.doctorId,
                     hour: nearestHour,
@@ -136,6 +138,7 @@ const RedAndYellowColors = async (appointment, patient, doctor, appointments) =>
             }
             if (key) {
                 return {
+                    _id: appointment._id,
                     patientId: appointment.patientId,
                     doctorId: appointment.doctorId,
                     hour: nearestHour.toString(),
@@ -145,6 +148,7 @@ const RedAndYellowColors = async (appointment, patient, doctor, appointments) =>
         }
         else if ((nearestHour > toPatientAvailable || nearestHour > toDoctorAvailable) && appointment.hour) {
             return {
+                _id: appointment._id,
                 patientId: appointment.patientId,
                 doctorId: appointment.doctorId,
                 hour: appointment.hour,
@@ -163,6 +167,7 @@ const RedAndYellowColors = async (appointment, patient, doctor, appointments) =>
             }
             if (key) {
                 return {
+                    _id: appointment._id,
                     patientId: appointment.patientId,
                     doctorId: appointment.doctorId,
                     hour: nearestHour.toString(),

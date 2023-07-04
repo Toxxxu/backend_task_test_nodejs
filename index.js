@@ -12,10 +12,11 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
-const { getData, sendData, clearData, generateRightTable } = require('./controllers/index');
+const { getData, sendData, clearData, generateRightTable, viewCard } = require('./controllers/index');
 
 app.get('/getData', (req, res) => getData(req, res));
 app.get('/generateRightTable', (req, res) => generateRightTable(req, res));
+app.get('/viewCard/:id', (req, res) => viewCard(req, res));
 app.post('/sendData', (req, res) => sendData(req, res));
 app.delete('/clearData', (req, res) => clearData(req, res));
 
