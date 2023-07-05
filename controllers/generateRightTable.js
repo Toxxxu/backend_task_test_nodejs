@@ -13,7 +13,7 @@ exports.generateRightTable = async (req, res) => {
             const doctor = doctors.find((d) => d.id === appointment.doctorId);
 
             if (!appointment.hour) {
-                fakeTable.push(await RedAndYellowColors(appointment, patient, doctor, appointments));
+                fakeTable.push(await getColor(appointment, patient, doctor, appointments));
             }
 
             const [startPatient, endPatient] = patient.hours.split('-');
@@ -28,9 +28,9 @@ exports.generateRightTable = async (req, res) => {
         
             if ((isPatientAvailable && isDoctorAvailable) || (isPatientAvailable && !isDoctorAvailable) || (!isPatientAvailable && isDoctorAvailable)) {
                 if (appointment.color === "red") {
-                    fakeTable.push(await RedAndYellowColors(appointment, patient, doctor, appointments));
+                    fakeTable.push(await getColor(appointment, patient, doctor, appointments));
                 } else if (appointment.color === "yellow") {
-                    fakeTable.push(await RedAndYellowColors(appointment, patient, doctor, appointments));
+                    fakeTable.push(await getColor(appointment, patient, doctor, appointments));
                 } else {
                     fakeTable.push({
                         _id: appointment._id,
@@ -124,7 +124,7 @@ function isAppointmentConflict(existingAppointment, newAppointment, hour) {
     );
 }
 
-const RedAndYellowColors = async (appointment, patient, doctor, appointments) => {
+const getColor = async (appointment, patient, doctor, appointments) => {
     const [startPatient, endPatient] = patient.hours.split('-');
     const [fromPatientAvailable, toPatientAvailable] = [parseInt(startPatient), parseInt(endPatient)];
     const [startDoctor, endDoctor] = doctor.hours.split('-');
@@ -162,8 +162,7 @@ const RedAndYellowColors = async (appointment, patient, doctor, appointments) =>
                     color: 'blue',
                 }
             }
-        }
-        else if ((nearestHour > toPatientAvailable || nearestHour > toDoctorAvailable) && appointment.hour) {
+        } else if ((nearestHour > toPatientAvailable || nearestHour > toDoctorAvailable) && appointment.hour) {
             return {
                 _id: appointment._id,
                 patientId: appointment.patientId,

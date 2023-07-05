@@ -3,6 +3,7 @@ const { sendData } = require('./sendData');
 const { clearData } = require('./clearData');
 const { generateRightTable } = require('./generateRightTable');
 const { viewCard } = require('./viewCard');
+const { saveData } = require('./saveData');
 
 module.exports = {
     getData,
@@ -10,4 +11,5 @@ module.exports = {
     clearData,
     generateRightTable,
     viewCard,
+    saveData,
 };

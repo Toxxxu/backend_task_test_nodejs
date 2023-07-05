@@ -15,15 +15,15 @@ exports.viewCard = async (req, res) => {
         const data = await response.data;
         const appointments = data.rightTable;
 
-        const viewAppt = appointments.filter((appt) => appt._id === id)[0];
+        const appointmentData = appointments.filter((appt) => appt._id === id)[0];
 
-        const patientData = patients.filter((p) => p.id === viewAppt.patientId)[0];
-        const doctorData = doctors.filter((d) => d.id === viewAppt.doctorId)[0];
+        const patientData = patients.filter((p) => p.id === appointmentData.patientId)[0];
+        const doctorData = doctors.filter((d) => d.id === appointmentData.doctorId)[0];
         
         const view = {
             patientData,
             doctorData,
-            appointment: viewAppt.hour,
+            appointmentData,
         };
 
         res.json({
