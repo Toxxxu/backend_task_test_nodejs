@@ -128,13 +128,15 @@ exports.generateRightTable = async (req, res) => {
 
 // checking if there is any conflict with an appointment
 function isAppointmentConflict(existingAppointment, newAppointment, hour) {
+    const existingPatient = existingAppointment.patientId;
+    const newPatient = newAppointment.patientId;
+    const existingDoctor = existingAppointment.doctorId;
+    const newDoctor = newAppointment.doctorId;
+    const existingHour = existingAppointment.hour;
+    const newHour = newAppointment.hour;
     return (
-        (existingAppointment.patientId === newAppointment.patientId &&
-        existingAppointment.hour === newAppointment.hour &&
-        parseInt(existingAppointment.hour) === hour) ||
-        (existingAppointment.doctorId === newAppointment.doctorId &&
-        existingAppointment.hour === newAppointment.hour &&
-        parseInt(existingAppointment.hour) === hour)
+        (existingPatient === newPatient && existingHour === newHour && parseInt(existingHour) === hour) ||
+        (existingDoctor === newDoctor && existingHour === newHour && parseInt(existingHour) === hour)
     );
 }
 
