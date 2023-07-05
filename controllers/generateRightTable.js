@@ -48,8 +48,6 @@ exports.generateRightTable = async (req, res) => {
             }
         }
 
-        console.log(fakeTable);
-
         const rightTable = [];
 
         // this is another forEach which fixes the hours for an appointments
@@ -82,7 +80,7 @@ exports.generateRightTable = async (req, res) => {
                 if ((newHour > toPatientAvailable || newHour > toDoctorAvailable)) {
                     key = true;
                 }
-                appointment.hour = key ? hour : newHour.toString();
+                appointment.hour = key ? hour.toString() : newHour.toString();
             }
 
             rightTable.push(appointment);
@@ -115,6 +113,10 @@ exports.generateRightTable = async (req, res) => {
                 colorCounts.red++;
             }
         }
+
+        rightTable.sort((a, b) => a.patientId - b.patientId);
+        rightTable.sort((a, b) => a.doctorId - b.doctorId);
+        rightTable.sort((a, b) => a.hour - b.hour);
 
         res.json({
             rightTable,
