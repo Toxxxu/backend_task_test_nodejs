@@ -22,12 +22,14 @@ exports.sendData = async (req, res) => {
     try {
         for (const patient of patients) {
             const existingPatient = await Patient.findOne({ id: patient.id });
+            // checking if there is duplicate
             if (existingPatient) {
                 duplicatePatients.push(patient);
                 continue;
             }
 
             const newPatient = new Patient(patient);
+            // checking if there is no format errors for patient otherwise saving it
             try {
                 if (Object.keys(patient).length >= 5) {
                     throw new Error('Useless property found');
@@ -69,6 +71,7 @@ exports.sendData = async (req, res) => {
 
     try {
         for (const doctor of doctors) {
+            // checking if there is duplicate
             const existingDoctor = await Doctor.findOne({ id: doctor.id });
             if (existingDoctor) {
                 duplicateDoctors.push(doctor);
@@ -76,6 +79,7 @@ exports.sendData = async (req, res) => {
             }
 
             const newDoctor = new Doctor(doctor);
+            // checking if there is no format errors for patient otherwise saving it
             try {
                 if (Object.keys(doctor).length >= 5) {
                     throw new Error('Useless property found');
@@ -128,6 +132,8 @@ exports.sendData = async (req, res) => {
                 if (appointment.hour && appointment.hour.length >= 3 && parseInt(appointment.hour) >= 25) {
                     throw new Error('Wrong format appointment hour');
                 }
+                // generating a color for an appointment
+                // it assigns as green or yellow or red
                 newAppointment.color = await setAppointmentColor(appointment, patients, doctors, appointments);
                 await newAppointment.save();
                 successAppointments.push(newAppointment);
@@ -153,6 +159,7 @@ exports.sendData = async (req, res) => {
     });
 };
 
+// checking if there is a conflict with appointments
 function isAppointmentConflict(existingAppointment, newAppointment) {
     return (
         (existingAppointment.patientId === newAppointment.patientId &&
@@ -162,10 +169,12 @@ function isAppointmentConflict(existingAppointment, newAppointment) {
     );
 }
 
+// generating color for an appointment
 const setAppointmentColor = async (appointment, patients, doctors, appointments) => {
     const patient = patients.filter((p) => p.id === appointment.patientId)[0];
     const doctor = doctors.filter((d) => d.id === appointment.doctorId)[0];
 
+    // if hour doesn't exist then put red
     if (!appointment.hour) {
         return 'red';
     }
@@ -176,10 +185,13 @@ const setAppointmentColor = async (appointment, patients, doctors, appointments)
     const [fromDoctorAvailable, toDoctorAvailable] = [parseInt(startDoctor), parseInt(endDoctor)];
 
     const appointmentHour = parseInt(appointment.hour);
-        
+    
+    // checking if doctor and patient can be in hospital in given appointment time
     const isPatientAvailable = appointmentHour >= fromPatientAvailable && appointmentHour <= toPatientAvailable;
     const isDoctorAvailable = appointmentHour >= fromDoctorAvailable && appointmentHour < toDoctorAvailable;
     
+    // generating roles only if doctor and patient is available for it and checking if there is given conflicts
+    // if there is more than 2 conflicts then set it as yellow otherwise green
     if (isPatientAvailable && isDoctorAvailable) {
         const conflictingAppointments = appointments.filter((existing) => 
             isAppointmentConflict(existing, appointment)
