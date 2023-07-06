@@ -32,9 +32,7 @@ exports.generateRightTable = async (req, res) => {
             // generating an hour for an appointment but there might be some mistakes while generating it
             // I made a fakeTable to generate random hours for this
             if ((isPatientAvailable && isDoctorAvailable) || (isPatientAvailable && !isDoctorAvailable) || (!isPatientAvailable && isDoctorAvailable)) {
-                if (appointment.color === "red") {
-                    fakeTable.push(await getColor(appointment, patient, doctor, appointments));
-                } else if (appointment.color === "yellow") {
+                if (appointment.color === "red" || appointment.color === "yellow") {
                     fakeTable.push(await getColor(appointment, patient, doctor, appointments));
                 } else {
                     fakeTable.push({
