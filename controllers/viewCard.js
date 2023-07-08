@@ -6,8 +6,6 @@ exports.viewCard = async (req, res) => {
     try {
         const id = req.params.id;
 
-        console.log(id);
-
         const patients = await Patient.find();
         const doctors = await Doctor.find();
 
