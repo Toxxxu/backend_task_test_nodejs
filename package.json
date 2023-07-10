@@ -4,10 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "build": "esbuild index.js --platform=node --bundle --minify --outfile=built/index.js",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
