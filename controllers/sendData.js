@@ -175,8 +175,6 @@ const setAppointmentColor = async (appointment, patients, doctors, appointments)
     const doctor = doctors.filter((d) => d.id === appointment.doctorId)[0];
     const appointmentsDB = await Appointment.find();
 
-    console.log(appointmentsDB.length);
-
     // if hour doesn't exist then put red
     if (!appointment.hour) {
         return 'red';
@@ -203,8 +201,6 @@ const setAppointmentColor = async (appointment, patients, doctors, appointments)
         const conflictingAppointmentsDB = appointmentsDB.filter(async (existing) => 
             isAppointmentConflict(existing, appointment)
         );
-
-        console.log(conflictingAppointmentsDB.length);
 
         if (conflictingAppointments.length >= 2 || conflictingAppointmentsDB.length >= 2) {
             return 'yellow';
