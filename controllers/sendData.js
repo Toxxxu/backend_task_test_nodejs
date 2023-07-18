@@ -159,55 +159,43 @@ exports.sendData = async (req, res) => {
     });
 };
 
-// checking if there is a conflict with appointments
-function isAppointmentConflict(existingAppointment, newAppointment) {
-    return (
-        (existingAppointment.patientId === newAppointment.patientId &&
-        existingAppointment.hour === newAppointment.hour) ||
-        (existingAppointment.doctorId === newAppointment.doctorId &&
-        existingAppointment.hour === newAppointment.hour)
-    );
-}
-
 // generating color for an appointment
 const setAppointmentColor = async (appointment, patients, doctors, appointments) => {
     const patient = patients.filter((p) => p.id === appointment.patientId)[0];
     const doctor = doctors.filter((d) => d.id === appointment.doctorId)[0];
-    const appointmentsDB = await Appointment.find();
 
     // if hour doesn't exist then put red
     if (!appointment.hour) {
         return 'red';
     }
 
-    const [startPatient, endPatient] = patient.hours.split('-');
-    const [fromPatientAvailable, toPatientAvailable] = [parseInt(startPatient), parseInt(endPatient)];
-    const [startDoctor, endDoctor] = doctor.hours.split('-');
-    const [fromDoctorAvailable, toDoctorAvailable] = [parseInt(startDoctor), parseInt(endDoctor)];
-
-    const appointmentHour = parseInt(appointment.hour);
-    
-    // checking if doctor and patient can be in hospital in given appointment time
-    const isPatientAvailable = appointmentHour >= fromPatientAvailable && appointmentHour <= toPatientAvailable;
-    const isDoctorAvailable = appointmentHour >= fromDoctorAvailable && appointmentHour < toDoctorAvailable;
-    
-    // generating roles only if doctor and patient is available for it and checking if there is given conflicts
-    // if there is more than 2 conflicts then set it as yellow otherwise green
-    if (isPatientAvailable && isDoctorAvailable) {
-        const conflictingAppointments = appointments.filter((existing) => 
-            isAppointmentConflict(existing, appointment)
-        );
-
-        const conflictingAppointmentsDB = appointmentsDB.filter(async (existing) => 
-            isAppointmentConflict(existing, appointment)
-        );
-
-        if (conflictingAppointments.length >= 2 || conflictingAppointmentsDB.length >= 2) {
-            return 'yellow';
-        } else {
-            return 'green';
-        }
-    } else {
+    if (!isValidAppointmentTime(appointment.hour, patient.hours, doctor.hours)) {
         return 'red';
+    } else if (isAppointmentConflicting(appointment, appointments)) {
+        return 'yellow';
+    } else {
+        return 'green';
     }
+}
+
+function isValidAppointmentTime(appointmentHour, patientHours, doctorHours) {
+    const [patientStart, patientEnd] = patientHours.split('-');
+    const [doctorStart, doctorEnd] = doctorHours.split('-');
+
+    return (
+        parseInt(appointmentHour) >= parseInt(patientStart) &&
+        parseInt(appointmentHour) >= parseInt(doctorStart) &&
+        parseInt(appointmentHour) < parseInt(patientEnd) &&
+        parseInt(appointmentHour) < parseInt(doctorEnd)
+    );
+}
+
+function isAppointmentConflicting(appointment, appointments) {
+    return appointments.some((appt) => {
+        return (
+            ((appt.patientId === appointment.patientId && appt.doctorId !== appointment.doctorId) ||
+            (appt.patientId !== appointment.patientId && appt.doctorId === appointment.doctorId)) &&
+            appt.hour === appointment.hour
+        );
+    });
 }
