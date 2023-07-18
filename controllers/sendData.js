@@ -178,6 +178,7 @@ const setAppointmentColor = async (appointment, patients, doctors, appointments)
     }
 }
 
+// checking if the time is valid for an appointment
 function isValidAppointmentTime(appointmentHour, patientHours, doctorHours) {
     const [patientStart, patientEnd] = patientHours.split('-');
     const [doctorStart, doctorEnd] = doctorHours.split('-');
@@ -190,6 +191,7 @@ function isValidAppointmentTime(appointmentHour, patientHours, doctorHours) {
     );
 }
 
+// checking the conflict in appointments
 function isAppointmentConflicting(appointment, appointments) {
     return appointments.some((appt) => {
         return (

@@ -14,6 +14,7 @@ exports.generateRightTable = async (req, res) => {
       red: 0,
     }
 
+    // sorting appointments by patients and doctors available hours
     appointments.sort((a, b) => compareAppointments(a, b, patients, doctors));
 
     for (const appointment of appointments) {
@@ -25,12 +26,16 @@ exports.generateRightTable = async (req, res) => {
       const [startDoctor, endDoctor] = doctor.hours.split('-');
       const [fromDoctorAvailable, toDoctorAvailable] = [parseInt(startDoctor), parseInt(endDoctor)];
       
+      // assigning new hour for any appointment
       let newHour = fromPatientAvailable >= fromDoctorAvailable ? fromPatientAvailable : fromDoctorAvailable;
 
+      // if the hour doesn't exist then generate an hour for this
       if (!appointment.hour) {
+        // checking if appointment connflicting then increase an hour
         while (isAppointmentConflicting(appointment, rightTable, newHour)) {
           newHour++;
         }
+        // if an hour is bigger than patient or doctor end hour then put it red and random hour otherwise blue
         if (!(newHour > toPatientAvailable || newHour > toDoctorAvailable)) {
           appointment.hour = newHour.toString();
           appointment.color = 'blue';
@@ -41,9 +46,12 @@ exports.generateRightTable = async (req, res) => {
           colorCounts.red++;
         }
       } else {
+        // checking if appointment connflicting then increase an hour
         while (isAppointmentConflicting(appointment, rightTable, newHour)) {
           newHour++;
         }
+        // if an hour is bigger than patient or doctor end hour then put it red and random hour otherwise put it green
+        // if the appointment has same hour as new hour otherwise put it blue if an hour changed for an appointment
         if (!(newHour > toPatientAvailable || newHour > toDoctorAvailable)) {
           if (newHour.toString() === appointment.hour) {
             appointment.hour = newHour.toString();
@@ -63,6 +71,7 @@ exports.generateRightTable = async (req, res) => {
       rightTable.push(appointment);
     }
 
+    // sorting by patient, doctor and hours
     rightTable.sort((a, b) => a.patientId - b.patientId);
     rightTable.sort((a, b) => a.doctorId - b.doctorId);
     rightTable.sort((a, b) => a.hour - b.hour);
@@ -77,6 +86,7 @@ exports.generateRightTable = async (req, res) => {
   }
 }
 
+// comparing appointments and sorting
 function compareAppointments(appointment1, appointment2, patients, doctors) {
   const patient1 = patients.find(patient => patient.id === appointment1.patientId);
   const patient2 = patients.find(patient => patient.id === appointment2.patientId);
@@ -109,6 +119,7 @@ function compareAppointments(appointment1, appointment2, patients, doctors) {
   }
 }
 
+// onchecking appointment conflicts for new hour
 function isAppointmentConflicting(appointment, appointments, hour) {
   return appointments.some((appt) => {
       return (
