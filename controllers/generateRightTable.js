@@ -72,9 +72,15 @@ exports.generateRightTable = async (req, res) => {
     }
 
     // sorting by patient, doctor and hours
-    rightTable.sort((a, b) => a.patientId - b.patientId);
-    rightTable.sort((a, b) => a.doctorId - b.doctorId);
-    rightTable.sort((a, b) => a.hour - b.hour);
+    rightTable.sort((a, b) => {
+      if (a.patientId !== b.patientId) {
+        return a.patientId - b.patientId;
+      } else if (a.doctorId !== b.doctorId) {
+        return a.doctorId - b.doctorId;
+      } else {
+        return a.hour - b.hour;
+      }
+    });
 
     res.json({
       rightTable,
